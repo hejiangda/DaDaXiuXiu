@@ -14,9 +14,10 @@ static void getBinMask( const Mat& comMask, Mat& binMask )
 }
 void Process::start()
 {
-    cout << imgName << endl;
+    cout << "fileName: " << imgName << endl;
     img = imread(imgName, CV_LOAD_IMAGE_UNCHANGED);
-    resize(img, img, Size(800, 800 * img.rows / img.cols));
+    if (img.cols > 1600)
+        resize(img, img, Size(1600, 1600 * img.rows / img.cols));
     int sizOfOri = img.cols * img.rows;
     if (img.channels() == 4)
     {
@@ -48,37 +49,27 @@ void Process::start()
         Mat bgdModel, fgdModel;
         if ( !mask.empty() )
             mask.setTo(Scalar::all(GC_BGD));
-        Mat tmp = img;
-//        if (img.cols > 1000)
-//        {
-//            resize(img, tmp, Size(1000, img.rows * 1000 / img.cols));
-//        }
-        Rect r = Rect(Point(1, 1), Point(tmp.cols - 2, tmp.rows - 2));
-        grabCut( tmp, mask, r, bgdModel, fgdModel, 5, GC_INIT_WITH_RECT );
-        Mat binMask;
 
-        Mat res = Mat(img.size(),  CV_8UC3, Scalar::all(255));
+        Rect r = Rect(Point(1, 1), Point(img.cols - 2, img.rows - 2));
+        grabCut( img, mask, r, bgdModel, fgdModel, 3, GC_INIT_WITH_RECT );
+        Mat binMask;
 
         getBinMask( mask, binMask );
 
-        Mat GrayImg;
-
-        threshold(binMask, GrayImg, 0, 255, CV_THRESH_BINARY);
-//        resize(GrayImg, GrayImg, img.size());
-//        img.copyTo( res, GrayImg );
-
+//        Mat GrayImg;
+        threshold(binMask, binMask, 0, 255, CV_THRESH_BINARY);
         // GrabCut End
 
         vector<vector<Point>> contours;
         vector<Vec4i>hierarchy;
-        findContours(GrayImg, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+        findContours(binMask, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
         vector<Point>newCon = mergeContours(contours, sizOfOri / 10);
-//        drawContours(GrayImg, contours, -1, Scalar(255), CV_FILLED, 1, hierarchy);
+
         Rect rect = boundingRect(newCon);
 
         Mat final = img(rect);
-        alpha = GrayImg(rect);
+        alpha = binMask(rect);
 
         GaussianBlur(alpha, alpha, Size(5, 5), 1, 1);
 
@@ -116,7 +107,6 @@ void Process::start()
     }
     resize(resultT, resultT, outputSz);
     resize(resultW, resultW, outputSz);
-
 
     flg = true;
 }

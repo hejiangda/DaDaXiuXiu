@@ -4,25 +4,35 @@
 #include <QDir>
 MainWindow::MainWindow(QWidget* parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow), addFlg(true)
 {
     ui->setupUi(this);
 
-    connect(&MT,
+    connect(&MT1,
             SIGNAL(WhiteDisplay(QPixmap)),
             ui->WhiteImg,
             SLOT(setPixmap(QPixmap)));
 
-    connect(&MT,
+    connect(&MT1,
             SIGNAL(TransDisplay(QPixmap)),
             ui->TransImg,
             SLOT(setPixmap(QPixmap)));
+    connect(&MT2,
+            SIGNAL(WhiteDisplay(QPixmap)),
+            ui->WhiteImg,
+            SLOT(setPixmap(QPixmap)));
+
+    connect(&MT2,
+            SIGNAL(TransDisplay(QPixmap)),
+            ui->TransImg,
+            SLOT(setPixmap(QPixmap)));
+
 }
 
 MainWindow::~MainWindow()
 {
-    MT.quit();
-    MT.wait();
+    MT1.quit();
+    MT2.quit();
     delete ui;
 }
 
@@ -63,7 +73,11 @@ void MainWindow::dropEvent(QDropEvent* event)
             {
                 //是文件就直接加进来
                 ui->imgListWidget->addItem(fileInfo.filePath());
-                v.push_back(fileInfo.filePath().toStdString());
+                if (addFlg)
+                    l1.push_back(fileInfo.filePath().toStdString());
+                else
+                    l2.push_back(fileInfo.filePath().toStdString());
+                addFlg = !addFlg;
             }
         }
         else if (fileInfo.isDir())
@@ -75,16 +89,27 @@ void MainWindow::dropEvent(QDropEvent* event)
                 if (acceptedFileTypes.contains(fileInfo1.suffix().toLower()))
                 {
                     ui->imgListWidget->addItem(fileInfo1.filePath());
-                    v.push_back(fileInfo1.filePath().toStdString());
+                    if (addFlg)
+                        l1.push_back(fileInfo1.filePath().toStdString());
+                    else
+                        l2.push_back(fileInfo1.filePath().toStdString());
+                    addFlg = !addFlg;
                 }
             }
         }
     }
-    MT.setFileLists(v);
+    MT1.setFileLists(l1);
+    MT2.setFileLists(l2);
     if (ui->comboBox->currentIndex() == 0)
-        MT.setSz(Size(800, 800));
+    {
+        MT1.setSz(Size(800, 800));
+        MT2.setSz(Size(800, 800));
+    }
     else
-        MT.setSz(Size(800, 1200));
+    {
+        MT1.setSz(Size(800, 1200));
+        MT2.setSz(Size(800, 1200));
+    }
 }
 //只取得该目录下的子文件不考虑子文件夹
 QFileInfoList MainWindow::GetAllFileList(QString path)
@@ -115,11 +140,11 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 
 void MainWindow::on_imgListWidget_itemClicked(QListWidgetItem* item)
 {
-    Process tmp();
 
 }
 
 void MainWindow::on_pushButton_clicked()
 {
-    MT.start();
+    MT1.start();
+    MT2.start();
 }

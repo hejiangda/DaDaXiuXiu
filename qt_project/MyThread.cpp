@@ -16,9 +16,9 @@ void MyThread::run()
 {
     for (auto x : L)
     {
+//        cout << x << endl;
         Process p(x, outSz);
         p.start();
-
         Mat T;
         Mat W;
         p.getTrans(T);
