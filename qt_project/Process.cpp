@@ -4,10 +4,19 @@ Process::Process(String name, Size sz):  outputSz(sz), imgName(name), flg(false)
 {
 
 }
+static void getBinMask( const Mat& comMask, Mat& binMask )
+{
+    if ( comMask.empty() || comMask.type() != CV_8UC1 )
+        CV_Error( Error::StsBadArg, "comMask is empty or has incorrect type (not CV_8UC1)" );
+    if ( binMask.empty() || binMask.rows != comMask.rows || binMask.cols != comMask.cols )
+        binMask.create( comMask.size(), CV_8UC1 );
+    binMask = comMask & 1;
+}
 void Process::start()
 {
     cout << imgName << endl;
     img = imread(imgName, CV_LOAD_IMAGE_UNCHANGED);
+    resize(img, img, Size(800, 800 * img.rows / img.cols));
     int sizOfOri = img.cols * img.rows;
     if (img.channels() == 4)
     {
@@ -34,29 +43,53 @@ void Process::start()
     }
     else
     {
+        // GrabCut
+        Mat mask;
+        Mat bgdModel, fgdModel;
+        if ( !mask.empty() )
+            mask.setTo(Scalar::all(GC_BGD));
+        Mat tmp = img;
+//        if (img.cols > 1000)
+//        {
+//            resize(img, tmp, Size(1000, img.rows * 1000 / img.cols));
+//        }
+        Rect r = Rect(Point(1, 1), Point(tmp.cols - 2, tmp.rows - 2));
+        grabCut( tmp, mask, r, bgdModel, fgdModel, 5, GC_INIT_WITH_RECT );
+        Mat binMask;
+
+        Mat res = Mat(img.size(),  CV_8UC3, Scalar::all(255));
+
+        getBinMask( mask, binMask );
+
         Mat GrayImg;
-        cvtColor(img, GrayImg, CV_BGR2GRAY);
-        threshold(GrayImg, GrayImg, 254, 255, CV_THRESH_BINARY_INV);
+
+        threshold(binMask, GrayImg, 0, 255, CV_THRESH_BINARY);
+//        resize(GrayImg, GrayImg, img.size());
+//        img.copyTo( res, GrayImg );
+
+        // GrabCut End
 
         vector<vector<Point>> contours;
         vector<Vec4i>hierarchy;
         findContours(GrayImg, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
-        vector<Point>newCon = mergeContours(contours, sizOfOri / 100);
-
+        vector<Point>newCon = mergeContours(contours, sizOfOri / 10);
+//        drawContours(GrayImg, contours, -1, Scalar(255), CV_FILLED, 1, hierarchy);
         Rect rect = boundingRect(newCon);
+
         Mat final = img(rect);
         alpha = GrayImg(rect);
 
-        drawContours(alpha, contours, -1, Scalar(255), CV_FILLED, 8, hierarchy);
-        blur(alpha, alpha, Size(5, 5));
+        GaussianBlur(alpha, alpha, Size(5, 5), 1, 1);
 
         vector<Mat>chn;
         chn.push_back(final);
         chn.push_back(alpha);
 
         merge(chn, Trans);
+
     }
+
     White = Mat(Trans.size(), CV_8UC3, Scalar::all(255));
     cvAdd4cMat_q(White, Trans, 1);
     int x, y;
