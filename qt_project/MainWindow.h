@@ -37,9 +37,9 @@ private:
     Ui::MainWindow* ui;
     QPixmap TransShow, WhiteShow;
     Process* pro;
-    list<string> l1, l2;
-    MyThread MT1, MT2;
-    bool addFlg;
+    list<string> l1, l2, l3;
+    MyThread MT1, MT2, MT3;
+    int addFlg;
 
 };
 

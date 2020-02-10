@@ -4,7 +4,7 @@
 #include <QDir>
 MainWindow::MainWindow(QWidget* parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow), addFlg(true)
+    ui(new Ui::MainWindow), addFlg(0)
 {
     ui->setupUi(this);
 
@@ -27,12 +27,23 @@ MainWindow::MainWindow(QWidget* parent) :
             ui->TransImg,
             SLOT(setPixmap(QPixmap)));
 
+    connect(&MT3,
+            SIGNAL(WhiteDisplay(QPixmap)),
+            ui->WhiteImg,
+            SLOT(setPixmap(QPixmap)));
+
+    connect(&MT3,
+            SIGNAL(TransDisplay(QPixmap)),
+            ui->TransImg,
+            SLOT(setPixmap(QPixmap)));
+
 }
 
 MainWindow::~MainWindow()
 {
     MT1.quit();
     MT2.quit();
+    MT3.quit();
     delete ui;
 }
 
@@ -73,11 +84,13 @@ void MainWindow::dropEvent(QDropEvent* event)
             {
                 //是文件就直接加进来
                 ui->imgListWidget->addItem(fileInfo.filePath());
-                if (addFlg)
+                if (addFlg == 0)
                     l1.push_back(fileInfo.filePath().toStdString());
-                else
+                else if (addFlg == 1)
                     l2.push_back(fileInfo.filePath().toStdString());
-                addFlg = !addFlg;
+                else if (addFlg == 2)
+                    l3.push_back(fileInfo.filePath().toStdString());
+                addFlg = (addFlg + 1) % 3;
             }
         }
         else if (fileInfo.isDir())
@@ -89,26 +102,31 @@ void MainWindow::dropEvent(QDropEvent* event)
                 if (acceptedFileTypes.contains(fileInfo1.suffix().toLower()))
                 {
                     ui->imgListWidget->addItem(fileInfo1.filePath());
-                    if (addFlg)
+                    if (addFlg == 0)
                         l1.push_back(fileInfo1.filePath().toStdString());
-                    else
+                    else if (addFlg == 1)
                         l2.push_back(fileInfo1.filePath().toStdString());
-                    addFlg = !addFlg;
+                    else if (addFlg == 2)
+                        l3.push_back(fileInfo1.filePath().toStdString());
+                    addFlg = (addFlg + 1) % 3;
                 }
             }
         }
     }
     MT1.setFileLists(l1);
     MT2.setFileLists(l2);
+    MT3.setFileLists(l3);
     if (ui->comboBox->currentIndex() == 0)
     {
         MT1.setSz(Size(800, 800));
         MT2.setSz(Size(800, 800));
+        MT3.setSz(Size(800, 800));
     }
     else
     {
         MT1.setSz(Size(800, 1200));
         MT2.setSz(Size(800, 1200));
+        MT3.setSz(Size(800, 1200));
     }
 }
 //只取得该目录下的子文件不考虑子文件夹
@@ -147,4 +165,6 @@ void MainWindow::on_pushButton_clicked()
 {
     MT1.start();
     MT2.start();
+    MT3.start();
+    ui->pushButton->setDisabled(true);
 }
