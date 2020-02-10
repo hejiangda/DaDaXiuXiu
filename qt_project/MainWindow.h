@@ -8,6 +8,9 @@
 #include <QMimeData>
 #include <QDebug>
 #include <QFileInfoList>
+#include <Process.h>
+#include <QListWidgetItem>
+#include "MyThread.h"
 namespace Ui {
 class MainWindow;
 }
@@ -25,9 +28,17 @@ protected:
     void dropEvent(QDropEvent* e);
     void resizeEvent(QResizeEvent* event);
 
+private slots:
+    void on_imgListWidget_itemClicked(QListWidgetItem* item);
+
+    void on_pushButton_clicked();
+
 private:
     Ui::MainWindow* ui;
-    QPixmap resShow, origShow;
+    QPixmap TransShow, WhiteShow;
+    Process* pro;
+    list<string> v;
+    MyThread MT;
 };
 
 #endif // MAINWINDOW_H

@@ -8,10 +8,21 @@ MainWindow::MainWindow(QWidget* parent) :
 {
     ui->setupUi(this);
 
+    connect(&MT,
+            SIGNAL(WhiteDisplay(QPixmap)),
+            ui->WhiteImg,
+            SLOT(setPixmap(QPixmap)));
+
+    connect(&MT,
+            SIGNAL(TransDisplay(QPixmap)),
+            ui->TransImg,
+            SLOT(setPixmap(QPixmap)));
 }
 
 MainWindow::~MainWindow()
 {
+    MT.quit();
+    MT.wait();
     delete ui;
 }
 
@@ -52,6 +63,7 @@ void MainWindow::dropEvent(QDropEvent* event)
             {
                 //是文件就直接加进来
                 ui->imgListWidget->addItem(fileInfo.filePath());
+                v.push_back(fileInfo.filePath().toStdString());
             }
         }
         else if (fileInfo.isDir())
@@ -63,43 +75,51 @@ void MainWindow::dropEvent(QDropEvent* event)
                 if (acceptedFileTypes.contains(fileInfo1.suffix().toLower()))
                 {
                     ui->imgListWidget->addItem(fileInfo1.filePath());
+                    v.push_back(fileInfo1.filePath().toStdString());
                 }
             }
         }
     }
+    MT.setFileLists(v);
+    if (ui->comboBox->currentIndex() == 0)
+        MT.setSz(Size(800, 800));
+    else
+        MT.setSz(Size(800, 1200));
 }
-//循环读取文件路径,后期可以考虑换成多线程-线程池来做.
 //只取得该目录下的子文件不考虑子文件夹
 QFileInfoList MainWindow::GetAllFileList(QString path)
 {
     QDir dir(path);
     QFileInfoList file_list = dir.entryInfoList(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-//    QFileInfoList folder_list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-
-//    for (int i = 0; i != folder_list.size(); i++)
-//    {
-//        QString name = folder_list.at(i).absoluteFilePath();
-//        QFileInfoList child_file_list = GetAllFileList(name);
-//        file_list.append(child_file_list);
-//    }
 
     return file_list;
 }
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
     Q_UNUSED(event);
-    if (!origShow.isNull())
+    if (!WhiteShow.isNull())
     {
-        ui->origImg->setPixmap(origShow.scaled(ui->origImg->width() - 5,
-                                               ui->origImg->height() - 5,
-                                               Qt::KeepAspectRatio,
-                                               Qt::SmoothTransformation));
+        ui->WhiteImg->setPixmap(WhiteShow.scaled(ui->WhiteImg->width() - 5,
+                                                 ui->WhiteImg->height() - 5,
+                                                 Qt::KeepAspectRatio,
+                                                 Qt::SmoothTransformation));
     }
-    if (!resShow.isNull())
+    if (!TransShow.isNull())
     {
-        ui->resImg->setPixmap(resShow.scaled(ui->resImg->width() - 5,
-                                             ui->resImg->height() - 5,
-                                             Qt::KeepAspectRatio,
-                                             Qt::SmoothTransformation));
+        ui->TransImg->setPixmap(TransShow.scaled(ui->TransImg->width() - 5,
+                                                 ui->TransImg->height() - 5,
+                                                 Qt::KeepAspectRatio,
+                                                 Qt::SmoothTransformation));
     }
+}
+
+void MainWindow::on_imgListWidget_itemClicked(QListWidgetItem* item)
+{
+    Process tmp();
+
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    MT.start();
 }

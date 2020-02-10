@@ -54,6 +54,24 @@ vector<Point> mergeContours(vector<vector<Point>> contours, double thre)
 //            drawContours(img, contours, index, color, CV_FILLED, 8, hierarchy);
 //        }
 
+//循环读取文件路径,后期可以考虑换成多线程-线程池来做.
+//只取得该目录下的子文件不考虑子文件夹
+//QFileInfoList MainWindow::GetAllFileList(QString path)
+//{
+//    QDir dir(path);
+//    QFileInfoList file_list = dir.entryInfoList(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
+////    QFileInfoList folder_list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+////    for (int i = 0; i != folder_list.size(); i++)
+////    {
+////        QString name = folder_list.at(i).absoluteFilePath();
+////        QFileInfoList child_file_list = GetAllFileList(name);
+////        file_list.append(child_file_list);
+////    }
+
+//    return file_list;
+//}
+
 
 bool cvAdd4cMat_q(cv::Mat& dst, cv::Mat& scr, double scale)
 {
@@ -168,8 +186,12 @@ int main()
 //        resize(result,result,Size(r,r));
 //    }
 //    waitKey(0);
-
-
+    Mat White(res.size(), CV_8UC3, Scalar::all(255));
+//    res.convertTo(White, White.type());
+//    res.copyTo(White, alpha);
+    cvAdd4cMat_q(White, res, 1);
+    imshow("White", White);
+    waitKey(0);
     vector<int> compression_params;
     compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
     compression_params.push_back(9);

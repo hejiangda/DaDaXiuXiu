@@ -50,43 +50,11 @@
           <item>
            <widget class="QPushButton" name="pushButton">
             <property name="text">
-             <string>批量处理</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_2">
-            <property name="text">
-             <string>单张处理</string>
+             <string>开始处理</string>
             </property>
            </widget>
           </item>
          </layout>
-        </item>
-        <item>
-         <widget class="QDial" name="dial">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimum">
-           <number>-30</number>
-          </property>
-          <property name="maximum">
-           <number>30</number>
-          </property>
-          <property name="wrapping">
-           <bool>true</bool>
-          </property>
-          <property name="notchTarget">
-           <double>3.700000000000000</double>
-          </property>
-          <property name="notchesVisible">
-           <bool>true</bool>
-          </property>
-         </widget>
         </item>
        </layout>
       </item>
@@ -128,7 +96,7 @@
        <enum>QLayout::SetMaximumSize</enum>
       </property>
       <item row="0" column="2">
-       <widget class="QLabel" name="origImg">
+       <widget class="QLabel" name="WhiteImg">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -136,7 +104,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>origImg</string>
+         <string>WhiteImg</string>
         </property>
        </widget>
       </item>
@@ -148,7 +116,7 @@
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QLabel" name="resImg">
+       <widget class="QLabel" name="TransImg">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -156,7 +124,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>resImg</string>
+         <string>TransImg</string>
         </property>
        </widget>
       </item>

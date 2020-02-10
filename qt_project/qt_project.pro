@@ -25,11 +25,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        MyThread.cpp \
+        Process.cpp \
         main.cpp \
         MainWindow.cpp
 
 HEADERS += \
-        MainWindow.h
+        MainWindow.h \
+        MyThread.h \
+        Process.h
 
 FORMS += \
         MainWindow.ui
