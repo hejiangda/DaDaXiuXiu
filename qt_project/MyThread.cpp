@@ -12,6 +12,10 @@ void MyThread::setSz(Size sz)
 {
     outSz = sz;
 }
+void MyThread::setNo(int no)
+{
+    No = no;
+}
 void MyThread::run()
 {
     for (auto x : L)
@@ -43,5 +47,6 @@ void MyThread::run()
                 .rgbSwapped()));
         p.Save(x);
     }
-
+//    cout << "ok:" << No << endl;
+    emit jobFinish(No);
 }

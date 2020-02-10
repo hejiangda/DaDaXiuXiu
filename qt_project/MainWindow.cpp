@@ -4,7 +4,7 @@
 #include <QDir>
 MainWindow::MainWindow(QWidget* parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow), addFlg(0)
+    ui(new Ui::MainWindow), addFlg(0), t1ok(false), t2ok(false), t3ok(false)
 {
     ui->setupUi(this);
 
@@ -36,7 +36,21 @@ MainWindow::MainWindow(QWidget* parent) :
             SIGNAL(TransDisplay(QPixmap)),
             ui->TransImg,
             SLOT(setPixmap(QPixmap)));
-
+    connect(&MT1,
+            SIGNAL(jobFinish(int)),
+            this,
+            SLOT(setflgAndReOpen(int)));
+    connect(&MT2,
+            SIGNAL(jobFinish(int)),
+            this,
+            SLOT(setflgAndReOpen(int)));
+    connect(&MT3,
+            SIGNAL(jobFinish(int)),
+            this,
+            SLOT(setflgAndReOpen(int)));
+    MT1.setNo(1);
+    MT2.setNo(2);
+    MT3.setNo(3);
 }
 
 MainWindow::~MainWindow()
@@ -164,7 +178,41 @@ void MainWindow::on_imgListWidget_itemClicked(QListWidgetItem* item)
 void MainWindow::on_pushButton_clicked()
 {
     MT1.start();
+    t1ok = false;
     MT2.start();
+    t2ok = false;
     MT3.start();
+    t3ok = false;
     ui->pushButton->setDisabled(true);
+}
+#include <QMessageBox>
+void MainWindow::setflgAndReOpen(int flg)
+{
+//    cout << "flg Ok:" << t1ok  << " " << t2ok << " " << t3ok << endl;
+    switch (flg)
+    {
+        case 1:
+            t1ok = true;
+            break;
+        case 2:
+            t2ok = true;
+            break;
+        case 3:
+            t3ok = true;
+            break;
+    }
+    if (t1ok and t2ok and t3ok)
+    {
+        t1ok = t2ok = t3ok = false;
+        ui->pushButton->setDisabled(false);
+        l1.clear();
+        l2.clear();
+        l3.clear();
+        ui->imgListWidget->clear();
+        cout << endl << "finished" << endl;
+        QApplication::beep();
+        QMessageBox box;
+        box.setText("所有图片已经处理完成，请添加新图片!");
+        box.exec();
+    }
 }

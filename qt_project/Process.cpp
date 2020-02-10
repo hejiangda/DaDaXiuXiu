@@ -65,7 +65,7 @@ void Process::start()
             mask.setTo(Scalar::all(GC_BGD));
 
         Rect r = Rect(Point(1, 1), Point(img.cols - 2, img.rows - 2));
-        grabCut( img, mask, r, bgdModel, fgdModel, 3, GC_INIT_WITH_RECT );
+        grabCut( img, mask, r, bgdModel, fgdModel, 5, GC_INIT_WITH_RECT );
         Mat binMask;
 
         getBinMask( mask, binMask );
