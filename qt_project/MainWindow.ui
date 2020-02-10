@@ -10,6 +10,9 @@
     <height>559</height>
    </rect>
   </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -67,14 +70,14 @@
        </layout>
       </item>
       <item>
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="imgLabel">
         <property name="text">
          <string>图片列表</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QListWidget" name="listWidget">
+       <widget class="QListWidget" name="imgListWidget">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -104,7 +107,7 @@
        <enum>QLayout::SetMinimumSize</enum>
       </property>
       <item>
-       <widget class="QGraphicsView" name="graphicsView_2"/>
+       <widget class="QGraphicsView" name="resGraphView"/>
       </item>
       <item>
        <widget class="Line" name="line_2">
@@ -114,7 +117,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QGraphicsView" name="graphicsView"/>
+       <widget class="QGraphicsView" name="origGraphView"/>
       </item>
      </layout>
     </item>
