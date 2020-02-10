@@ -23,9 +23,11 @@ public:
 protected:
     void dragEnterEvent(QDragEnterEvent* e);//重新实现两个事件处理函数
     void dropEvent(QDropEvent* e);
+    void resizeEvent(QResizeEvent* event);
 
 private:
     Ui::MainWindow* ui;
+    QPixmap resShow, origShow;
 };
 
 #endif // MAINWINDOW_H

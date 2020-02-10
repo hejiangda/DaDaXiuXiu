@@ -69,18 +69,37 @@ void MainWindow::dropEvent(QDropEvent* event)
     }
 }
 //循环读取文件路径,后期可以考虑换成多线程-线程池来做.
+//只取得该目录下的子文件不考虑子文件夹
 QFileInfoList MainWindow::GetAllFileList(QString path)
 {
     QDir dir(path);
     QFileInfoList file_list = dir.entryInfoList(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
-    QFileInfoList folder_list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+//    QFileInfoList folder_list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
 
-    for (int i = 0; i != folder_list.size(); i++)
-    {
-        QString name = folder_list.at(i).absoluteFilePath();
-        QFileInfoList child_file_list = GetAllFileList(name);
-        file_list.append(child_file_list);
-    }
+//    for (int i = 0; i != folder_list.size(); i++)
+//    {
+//        QString name = folder_list.at(i).absoluteFilePath();
+//        QFileInfoList child_file_list = GetAllFileList(name);
+//        file_list.append(child_file_list);
+//    }
 
     return file_list;
+}
+void MainWindow::resizeEvent(QResizeEvent* event)
+{
+    Q_UNUSED(event);
+    if (!origShow.isNull())
+    {
+        ui->origImg->setPixmap(origShow.scaled(ui->origImg->width() - 5,
+                                               ui->origImg->height() - 5,
+                                               Qt::KeepAspectRatio,
+                                               Qt::SmoothTransformation));
+    }
+    if (!resShow.isNull())
+    {
+        ui->resImg->setPixmap(resShow.scaled(ui->resImg->width() - 5,
+                                             ui->resImg->height() - 5,
+                                             Qt::KeepAspectRatio,
+                                             Qt::SmoothTransformation));
+    }
 }
