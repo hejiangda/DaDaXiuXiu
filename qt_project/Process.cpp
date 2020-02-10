@@ -19,6 +19,8 @@ void Process::start()
     if (img.cols > 1600)
         resize(img, img, Size(1600, 1600 * img.rows / img.cols));
     int sizOfOri = img.cols * img.rows;
+    float rotAngle = 0;
+
     if (img.channels() == 4)
     {
         vector<Mat>chann;
@@ -30,14 +32,26 @@ void Process::start()
         findContours(GrayImg, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
         vector<Point>newCon = mergeContours(contours, sizOfOri / 100);
 
+        RotatedRect rrect = minAreaRect(newCon);
+        cout << rrect.angle;
+        rotAngle = rrect.angle;
+
+        Mat tempGray;
+        warpFfine(GrayImg, tempGray, rotAngle);
+        Mat tempImg;
+        warpFfine(img, tempImg, rotAngle);
+
+        contours.clear();
+        hierarchy.clear();
+        findContours(tempGray, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+        newCon.clear();
+        newCon = mergeContours(contours, sizOfOri / 100);
         Rect rect = boundingRect(newCon);
-
-        alpha = GrayImg(rect);
-
+        alpha = tempGray(rect);
+        GaussianBlur(alpha, alpha, Size(3, 3), 1, 1);
         vector<Mat>chn;
-        chn.push_back(chann[0](rect));
-        chn.push_back(chann[1](rect));
-        chn.push_back(chann[2](rect));
+        split(tempImg(rect), chn);
+        chn.pop_back();
         chn.push_back(alpha);
 
         merge(chn, Trans);
@@ -55,8 +69,6 @@ void Process::start()
         Mat binMask;
 
         getBinMask( mask, binMask );
-
-//        Mat GrayImg;
         threshold(binMask, binMask, 0, 255, CV_THRESH_BINARY);
         // GrabCut End
 
@@ -66,19 +78,28 @@ void Process::start()
 
         vector<Point>newCon = mergeContours(contours, sizOfOri / 10);
 
+        RotatedRect rrect = minAreaRect(newCon);
+        cout << rrect.angle;
+        rotAngle = rrect.angle;
+
+        Mat tempGray;
+        warpFfine(binMask, tempGray, rotAngle);
+        Mat tempImg;
+        warpFfine(img, tempImg, rotAngle);
+
+        contours.clear();
+        hierarchy.clear();
+        findContours(tempGray, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+        newCon.clear();
+        newCon = mergeContours(contours, sizOfOri / 100);
         Rect rect = boundingRect(newCon);
-
-        Mat final = img(rect);
-        alpha = binMask(rect);
-
-        GaussianBlur(alpha, alpha, Size(5, 5), 1, 1);
-
+        alpha = tempGray(rect);
+        GaussianBlur(alpha, alpha, Size(3, 3), 1, 1);
         vector<Mat>chn;
-        chn.push_back(final);
+        chn.push_back(tempImg(rect));
         chn.push_back(alpha);
 
         merge(chn, Trans);
-
     }
 
     White = Mat(Trans.size(), CV_8UC3, Scalar::all(255));
@@ -217,4 +238,46 @@ bool Process::getTrans(Mat& T)
         return false;
     T = resultT;
     return true;
+}
+/*****************************************
+*inputim:要旋转的图像
+*tempImg:结果图像
+*angle:旋转角度，（逆时针为正，顺时针为负）
+*/
+void Process::warpFfine (Mat& inputIm, Mat& tempImg, float angle)
+{
+
+    CV_Assert(!inputIm.empty());
+    Mat inputImg;
+    inputIm.copyTo(inputImg);
+
+    float radian = (float) (angle / 180.0 * CV_PI);
+
+    //填充图像使其符合旋转要求
+    int uniSize = (int) ( max(inputImg.cols, inputImg.rows) * 1.414 );
+    int dx = (int) (uniSize - inputImg.cols) / 2;
+    int dy = (int) (uniSize - inputImg.rows) / 2;
+
+    copyMakeBorder(inputImg, tempImg, dy, dy, dx, dx, BORDER_CONSTANT);
+
+    //旋轉中心
+    Point2f center( (float)(tempImg.cols / 2), (float) (tempImg.rows / 2));
+    Mat affine_matrix = getRotationMatrix2D( center, angle, 1.0 );
+
+    //旋轉
+    warpAffine(tempImg, tempImg, affine_matrix, tempImg.size());
+
+    //旋轉后的圖像大小
+    float sinVal = fabs(sin(radian));
+    float cosVal = fabs(cos(radian));
+
+    Size targetSize( (int)(inputImg.cols * cosVal + inputImg.rows * sinVal),
+                     (int)(inputImg.cols * sinVal + inputImg.rows * cosVal) );
+
+    //剪掉四周边框
+    int x = (tempImg.cols - targetSize.width) / 2;
+    int y = (tempImg.rows - targetSize.height) / 2;
+
+    Rect rect(x, y, targetSize.width, targetSize.height);
+    tempImg = Mat(tempImg, rect);
 }

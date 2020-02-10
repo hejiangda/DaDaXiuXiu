@@ -29,6 +29,8 @@ private:
     string getFolderPath(string str);
     string getFileName(string str);
     bool isDirExist(QString fullPath);
+    void warpFfine (Mat& inputIm, Mat& tempImg, float angle);
+
     Mat img;
     Mat alpha;
     Mat White;
