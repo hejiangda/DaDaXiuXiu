@@ -55,7 +55,7 @@ vector<Point> mergeContours(vector<vector<Point>> contours, double thre)
 //        }
 
 
-int cvAdd4cMat_q(cv::Mat& dst, cv::Mat& scr, double scale)
+bool cvAdd4cMat_q(cv::Mat& dst, cv::Mat& scr, double scale)
 {
     if (dst.channels() != 3 || scr.channels() != 4)
     {
@@ -146,13 +146,35 @@ int main()
 
 
     }
-    imshow("res", res);
-    waitKey(0);
+//    imshow("res", res);
+    int x, y;
+    x = res.cols;
+    y = res.rows;
+    int z = x > y ? x : y;
+    Mat result(z, z, CV_8UC4, Scalar(255, 255, 255, 0));
+    if (x == z)
+    {
+        Rect r(0, (x - y) / 2, x, y);
+        Mat dst = result(r);
+        res.convertTo(dst, dst.type());
+    }
+    else
+    {
+        Rect r((y - x) / 2, 0, x, y);
+        Mat dst = result(r);
+        res.convertTo(dst, dst.type());
+    }
+//    if(r!=-1){
+//        resize(result,result,Size(r,r));
+//    }
+//    waitKey(0);
+
+
     vector<int> compression_params;
     compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
     compression_params.push_back(9);
 
-    imwrite("alpha.png", res, compression_params);
+    imwrite("alpha.png", result, compression_params);
 
     return 0;
 }
