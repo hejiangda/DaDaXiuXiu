@@ -1,2 +1,4 @@
 # DaDaXiuXiu
-基于electron的图片处理工具
+用OpenCV和Qt写的图片处理工具
+
+在Linux下装好依赖后可以直接编译，Windows下需要把程序中用到文件名的地方转换一下否则会出错。
