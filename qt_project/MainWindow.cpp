@@ -212,6 +212,7 @@ void MainWindow::setflgAndReOpen(int flg)
         cout << endl << "finished" << endl;
         QApplication::beep();
         QMessageBox box;
+        box.setWindowTitle("电商图片自动处理");
         box.setText("所有图片已经处理完成，请添加新图片!");
         box.exec();
     }
