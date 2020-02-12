@@ -8,7 +8,7 @@
 #include <QMimeData>
 #include <QDebug>
 #include <QFileInfoList>
-#include <Process.h>
+#include <MyProcess.h>
 #include <QListWidgetItem>
 #include "MyThread.h"
 namespace Ui {

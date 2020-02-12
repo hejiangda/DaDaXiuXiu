@@ -17,47 +17,48 @@ MainWindow::MainWindow(QWidget* parent) :
             SIGNAL(TransDisplay(QPixmap)),
             ui->TransImg,
             SLOT(setPixmap(QPixmap)));
-    connect(&MT2,
-            SIGNAL(WhiteDisplay(QPixmap)),
-            ui->WhiteImg,
-            SLOT(setPixmap(QPixmap)));
+//    connect(&MT2,
+//            SIGNAL(WhiteDisplay(QPixmap)),
+//            ui->WhiteImg,
+//            SLOT(setPixmap(QPixmap)));
 
-    connect(&MT2,
-            SIGNAL(TransDisplay(QPixmap)),
-            ui->TransImg,
-            SLOT(setPixmap(QPixmap)));
+//    connect(&MT2,
+//            SIGNAL(TransDisplay(QPixmap)),
+//            ui->TransImg,
+//            SLOT(setPixmap(QPixmap)));
 
-    connect(&MT3,
-            SIGNAL(WhiteDisplay(QPixmap)),
-            ui->WhiteImg,
-            SLOT(setPixmap(QPixmap)));
+//    connect(&MT3,
+//            SIGNAL(WhiteDisplay(QPixmap)),
+//            ui->WhiteImg,
+//            SLOT(setPixmap(QPixmap)));
 
-    connect(&MT3,
-            SIGNAL(TransDisplay(QPixmap)),
-            ui->TransImg,
-            SLOT(setPixmap(QPixmap)));
+//    connect(&MT3,
+//            SIGNAL(TransDisplay(QPixmap)),
+//            ui->TransImg,
+//            SLOT(setPixmap(QPixmap)));
+
     connect(&MT1,
             SIGNAL(jobFinish(int)),
             this,
             SLOT(setflgAndReOpen(int)));
-    connect(&MT2,
-            SIGNAL(jobFinish(int)),
-            this,
-            SLOT(setflgAndReOpen(int)));
-    connect(&MT3,
-            SIGNAL(jobFinish(int)),
-            this,
-            SLOT(setflgAndReOpen(int)));
+//    connect(&MT2,
+//            SIGNAL(jobFinish(int)),
+//            this,
+//            SLOT(setflgAndReOpen(int)));
+//    connect(&MT3,
+//            SIGNAL(jobFinish(int)),
+//            this,
+//            SLOT(setflgAndReOpen(int)));
     MT1.setNo(1);
-    MT2.setNo(2);
-    MT3.setNo(3);
+//    MT2.setNo(2);
+//    MT3.setNo(3);
 }
 
 MainWindow::~MainWindow()
 {
     MT1.quit();
-    MT2.quit();
-    MT3.quit();
+//    MT2.quit();
+//    MT3.quit();
     delete ui;
 }
 
@@ -98,13 +99,13 @@ void MainWindow::dropEvent(QDropEvent* event)
             {
                 //是文件就直接加进来
                 ui->imgListWidget->addItem(fileInfo.filePath());
-                if (addFlg == 0)
+//                if (addFlg == 0)
                     l1.push_back(fileInfo.filePath().toStdString());
-                else if (addFlg == 1)
-                    l2.push_back(fileInfo.filePath().toStdString());
-                else if (addFlg == 2)
-                    l3.push_back(fileInfo.filePath().toStdString());
-                addFlg = (addFlg + 1) % 3;
+//                else if (addFlg == 1)
+//                    l2.push_back(fileInfo.filePath().toStdString());
+//                else if (addFlg == 2)
+//                    l3.push_back(fileInfo.filePath().toStdString());
+//                addFlg = (addFlg + 1) % 3;
             }
         }
         else if (fileInfo.isDir())
@@ -116,31 +117,31 @@ void MainWindow::dropEvent(QDropEvent* event)
                 if (acceptedFileTypes.contains(fileInfo1.suffix().toLower()))
                 {
                     ui->imgListWidget->addItem(fileInfo1.filePath());
-                    if (addFlg == 0)
+//                    if (addFlg == 0)
                         l1.push_back(fileInfo1.filePath().toStdString());
-                    else if (addFlg == 1)
-                        l2.push_back(fileInfo1.filePath().toStdString());
-                    else if (addFlg == 2)
-                        l3.push_back(fileInfo1.filePath().toStdString());
-                    addFlg = (addFlg + 1) % 3;
+//                    else if (addFlg == 1)
+//                        l2.push_back(fileInfo1.filePath().toStdString());
+//                    else if (addFlg == 2)
+//                        l3.push_back(fileInfo1.filePath().toStdString());
+//                    addFlg = (addFlg + 1) % 3;
                 }
             }
         }
     }
     MT1.setFileLists(l1);
-    MT2.setFileLists(l2);
-    MT3.setFileLists(l3);
+//    MT2.setFileLists(l2);
+//    MT3.setFileLists(l3);
     if (ui->comboBox->currentIndex() == 0)
     {
         MT1.setSz(Size(800, 800));
-        MT2.setSz(Size(800, 800));
-        MT3.setSz(Size(800, 800));
+//        MT2.setSz(Size(800, 800));
+//        MT3.setSz(Size(800, 800));
     }
     else
     {
         MT1.setSz(Size(800, 1200));
-        MT2.setSz(Size(800, 1200));
-        MT3.setSz(Size(800, 1200));
+//        MT2.setSz(Size(800, 1200));
+//        MT3.setSz(Size(800, 1200));
     }
 }
 //只取得该目录下的子文件不考虑子文件夹
@@ -179,10 +180,10 @@ void MainWindow::on_pushButton_clicked()
 {
     MT1.start();
     t1ok = false;
-    MT2.start();
-    t2ok = false;
-    MT3.start();
-    t3ok = false;
+//    MT2.start();
+//    t2ok = false;
+//    MT3.start();
+//    t3ok = false;
     ui->pushButton->setDisabled(true);
 }
 #include <QMessageBox>
@@ -201,13 +202,13 @@ void MainWindow::setflgAndReOpen(int flg)
             t3ok = true;
             break;
     }
-    if (t1ok and t2ok and t3ok)
+    if (t1ok )
     {
         t1ok = t2ok = t3ok = false;
         ui->pushButton->setDisabled(false);
         l1.clear();
-        l2.clear();
-        l3.clear();
+//        l2.clear();
+//        l3.clear();
         ui->imgListWidget->clear();
         cout << endl << "finished" << endl;
         QApplication::beep();

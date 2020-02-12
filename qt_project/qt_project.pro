@@ -26,17 +26,21 @@ CONFIG += c++11
 
 SOURCES += \
         MyThread.cpp \
-        Process.cpp \
         main.cpp \
-        MainWindow.cpp
+        MainWindow.cpp \
+    MyProcess.cpp
 
 HEADERS += \
         MainWindow.h \
         MyThread.h \
-        Process.h
+    MyProcess.h
 
 FORMS += \
         MainWindow.ui
+
+LIBS += -L D:/OpenCV-MinGW-Build-OpenCV-3.4.5/x86/mingw/lib/libopencv_*.a
+INCLUDEPATH +=D:/OpenCV-MinGW-Build-OpenCV-3.4.5/include
+
 #Libraries
 unix: CONFIG += link_pkgconfig
 
@@ -50,3 +54,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     res.qrc
+RC_ICONS =d4.ico

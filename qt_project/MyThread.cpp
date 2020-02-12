@@ -1,5 +1,5 @@
 #include "MyThread.h"
-#include "Process.h"
+#include "MyProcess.h"
 MyThread::MyThread(QObject* parent ): QThread (parent)
 {
 
@@ -20,13 +20,15 @@ void MyThread::run()
 {
     for (auto x : L)
     {
-//        cout << x << endl;
-        Process p(x, outSz);
+//        cout << "1"<<QString::fromStdString(x).toLocal8Bit().toStdString() << endl;
+        Process p(QString::fromStdString(x).toLocal8Bit().toStdString(), outSz);
         p.start();
         Mat T;
         Mat W;
         p.getTrans(T);
         p.getWhite(W);
+        resize(T,T,Size(400,400));
+        resize(W,W,Size(400,400));
         emit TransDisplay(
             QPixmap::fromImage(
                 QImage(
